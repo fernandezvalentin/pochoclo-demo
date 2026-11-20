@@ -15,9 +15,16 @@
   font-weight: 400;
 }
 
-.grid__card:hover,
+@media (hover: hover) {
+  .grid__card:hover {
+    opacity: 1;
+    transform: scale(1.06);
+    z-index: 2;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.75);
+  }
+}
+
 .grid__card:focus-visible {
-  opacity: 1;
   transform: scale(1.06);
   z-index: 2;
   box-shadow: 0 6px 18px rgba(0, 0, 0, 0.75);
@@ -60,9 +67,20 @@
   text-overflow: ellipsis;
 }
 
-@media (max-width: 600px) {
+@media (max-width: 899px) {
+  .grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px 8px;
+  }
+}
+
+@media (max-width: 599px) {
   .grid {
     grid-template-columns: repeat(2, 1fr);
     gap: 10px 6px;
+  }
+  .grid__title {
+    font-size: 0.8rem;
+    padding: 18px 8px 6px;
   }
 }

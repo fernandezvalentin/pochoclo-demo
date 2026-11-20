@@ -32,6 +32,7 @@
 
 .nav__links a {
   transition: color 0.4s;
+  white-space: nowrap;
 }
 
 .nav__links a:hover {
@@ -186,7 +187,23 @@
   font-weight: 700;
 }
 
-@media (max-width: 900px) {
+/* Tablet horizontal: los links se compactan y, con el buscador abierto, pasan al menú "Explorar". */
+@media (max-width: 1199px) {
+  .nav__links {
+    margin-left: 28px;
+    gap: 16px;
+    font-size: 0.85rem;
+  }
+  .nav:has(.search--open) .nav__links {
+    display: none;
+  }
+  .nav:has(.search--open) .nav__browse {
+    display: block;
+  }
+}
+
+/* Tablet vertical y celular: siempre con el menú "Explorar". */
+@media (max-width: 899px) {
   .nav__links,
   .nav__kids {
     display: none;
@@ -196,7 +213,7 @@
   }
 }
 
-@media (max-width: 600px) {
+@media (max-width: 599px) {
   .nav {
     padding: 0 16px;
   }

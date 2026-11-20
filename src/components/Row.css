@@ -1,6 +1,44 @@
+/*
+ * Cantidad de tarjetas visibles por fila según el ancho de pantalla.
+ * El número no es entero a propósito: la última tarjeta queda cortada
+ * y así se entiende que la fila se puede deslizar.
+ */
 .row {
+  --gap: 0.4vw;
+  --per-view: 5.5;
+  --per-view-large: 7.5;
+  --per-view-top10: 5.2;
   color: white;
   margin-bottom: 3vw;
+}
+
+@media (max-width: 1199px) {
+  .row {
+    --per-view: 4.4;
+    --per-view-large: 6.4;
+    --per-view-top10: 4.2;
+  }
+}
+
+/* Tablet vertical */
+@media (max-width: 899px) {
+  .row {
+    --gap: 6px;
+    --per-view: 3.4;
+    --per-view-large: 4.6;
+    --per-view-top10: 3.2;
+    margin-bottom: 24px;
+  }
+}
+
+/* Celular */
+@media (max-width: 599px) {
+  .row {
+    --per-view: 2.3;
+    --per-view-large: 3.3;
+    --per-view-top10: 2.1;
+    margin-bottom: 20px;
+  }
 }
 
 .row__title {
@@ -16,12 +54,13 @@
 
 .row__posters {
   display: flex;
-  gap: 0.4vw;
+  gap: var(--gap);
   overflow-x: auto;
   overflow-y: hidden;
   padding: 12px 4% 24px;
   scroll-padding: 0 4%;
   scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
 }
 
 .row__posters::-webkit-scrollbar {
@@ -29,8 +68,9 @@
 }
 
 .row__card {
+  --per: var(--per-view);
   position: relative;
-  flex: 0 0 calc((100vw - 8% - 5 * 0.4vw) / 5.5);
+  flex: 0 0 calc((92vw - (var(--per) - 1) * var(--gap)) / var(--per));
   aspect-ratio: 16 / 9;
   padding: 0;
   background: #222;
@@ -41,13 +81,21 @@
 }
 
 .row--large .row__card {
-  flex-basis: calc((100vw - 8% - 6 * 0.4vw) / 7.5);
+  --per: var(--per-view-large);
   aspect-ratio: 2 / 3;
 }
 
-.row__card:hover,
+/* El zoom al pasar el mouse solo en dispositivos con mouse: en pantallas táctiles quedaría "pegado". */
+@media (hover: hover) {
+  .row__card:hover {
+    opacity: 1;
+    transform: scale(1.08);
+    z-index: 2;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.75);
+  }
+}
+
 .row__card:focus-visible {
-  opacity: 1;
   transform: scale(1.08);
   z-index: 2;
   box-shadow: 0 6px 18px rgba(0, 0, 0, 0.75);
@@ -88,48 +136,17 @@
   to { background-position: -200% 0; }
 }
 
-.row__arrow {
-  position: absolute;
-  top: 12px;
-  bottom: 24px;
-  width: 4%;
-  min-width: 32px;
-  background-color: rgba(20, 20, 20, 0.5);
-  color: white;
-  z-index: 5;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  opacity: 0;
-  border-radius: 0;
-  transition: opacity 0.2s, background-color 0.2s;
-}
-
-.row__container:hover .row__arrow {
-  opacity: 1;
-}
-
-.row__arrow:hover {
-  background-color: rgba(20, 20, 20, 0.75);
-}
-
-.row__arrow--left {
-  left: 0;
-}
-
-.row__arrow--right {
-  right: 0;
-}
-
 /* Top 10: número gigante con borde a la izquierda del póster */
 .row--top10 .row__card {
-  flex-basis: calc((100vw - 8% - 4 * 0.4vw) / 5.2);
+  --per: var(--per-view-top10);
   aspect-ratio: 7 / 5;
   background: transparent;
   overflow: visible;
   display: flex;
   justify-content: flex-end;
   align-items: stretch;
+  /* El número se escala según el ancho de su tarjeta (unidades cqw). */
+  container-type: inline-size;
 }
 
 .row--top10 .row__card:hover,
@@ -149,7 +166,7 @@
   position: absolute;
   left: 0;
   bottom: -0.12em;
-  font-size: calc((100vw - 8%) / 5.2 * 0.68);
+  font-size: 68cqw;
   font-weight: 900;
   line-height: 1;
   letter-spacing: -0.08em;
@@ -159,22 +176,58 @@
   user-select: none;
 }
 
-@media (max-width: 768px) {
-  .row.row--top10 .row__card {
-    flex-basis: 52vw;
-  }
+@media (max-width: 899px) {
   .row__rank {
-    font-size: 36vw;
     -webkit-text-stroke-width: 2px;
+  }
+}
+
+/* Flechas: solo con mouse. En pantallas táctiles se desliza con el dedo. */
+.row__arrow {
+  position: absolute;
+  top: 12px;
+  bottom: 24px;
+  width: 4%;
+  min-width: 32px;
+  background-color: rgba(20, 20, 20, 0.5);
+  color: white;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  border-radius: 0;
+  transition: opacity 0.2s, background-color 0.2s;
+}
+
+.row__container:hover .row__arrow,
+.row__arrow:focus-visible {
+  opacity: 1;
+}
+
+.row__arrow:hover {
+  background-color: rgba(20, 20, 20, 0.75);
+}
+
+.row__arrow--left {
+  left: 0;
+}
+
+.row__arrow--right {
+  right: 0;
+}
+
+@media (hover: none) {
+  .row__arrow {
+    display: none;
+  }
+
+  /* Al deslizar, cada tarjeta queda alineada al borde. */
+  .row__posters {
+    scroll-snap-type: x mandatory;
   }
 
   .row__card {
-    flex-basis: 42vw;
-  }
-  .row--large .row__card {
-    flex-basis: 30vw;
-  }
-  .row__arrow {
-    display: none;
+    scroll-snap-align: start;
   }
 }

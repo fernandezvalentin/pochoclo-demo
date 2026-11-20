@@ -41,7 +41,13 @@
   to { width: 220px; }
 }
 
-@media (max-width: 600px) {
+@media (hover: none) {
+  .search__input {
+    font-size: 16px;
+  }
+}
+
+@media (max-width: 599px) {
   .search {
     min-width: 0;
   }
