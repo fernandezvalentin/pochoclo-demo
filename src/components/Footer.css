@@ -4,30 +4,19 @@
   padding: 20px 4% 40px;
   color: #808080;
   font-size: 0.8rem;
+  line-height: 1.5;
 }
 
-.footer__links {
-  list-style: none;
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 14px;
-  margin-bottom: 28px;
+.footer__logo {
+  font-size: 1.4rem;
+  margin-bottom: 14px;
+  opacity: 0.8;
 }
 
-.footer__links span {
-  cursor: pointer;
+.footer__disclaimer {
+  margin-bottom: 8px;
 }
 
-.footer__links span:hover {
+.footer a {
   text-decoration: underline;
-}
-
-.footer__disclaimer a {
-  text-decoration: underline;
-}
-
-@media (max-width: 768px) {
-  .footer__links {
-    grid-template-columns: repeat(2, 1fr);
-  }
 }

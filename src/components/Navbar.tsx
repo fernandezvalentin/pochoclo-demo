@@ -87,12 +87,9 @@ const Navbar: React.FC<NavbarProps> = ({ activeView, onViewChange, profile, onPr
                     <span>{p.name}</span>
                   </button>
                 ))}
-                <button className="nav__menu-item nav__menu-item--text" onClick={() => { setMenuOpen(false); onSwitchProfile(); }}>
-                  Administrar perfiles
-                </button>
                 <div className="nav__menu-sep" />
                 <button className="nav__menu-item nav__menu-item--center" onClick={() => { setMenuOpen(false); onSwitchProfile(); }}>
-                  Cerrar sesión
+                  Cambiar de perfil
                 </button>
               </div>
             )}

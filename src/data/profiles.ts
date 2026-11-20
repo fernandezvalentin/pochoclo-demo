@@ -8,11 +8,11 @@ export interface Profile {
 export const PROFILES: Profile[] = [
   { id: 'valentin', name: 'Valentín', color: '#2b6de8' },
   { id: 'invitado', name: 'Invitado', color: '#e5a00d' },
-  { id: 'demo', name: 'Demo', color: '#e50914' },
+  { id: 'demo', name: 'Demo', color: '#e76f51' },
   { id: 'ninos', name: 'Niños', color: '#22a35a', kids: true },
 ];
 
-const STORAGE_KEY = 'netflix-clone:profile';
+const STORAGE_KEY = 'pochoclo:profile';
 
 export const loadProfile = (): Profile | null => {
   try {

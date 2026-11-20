@@ -17,7 +17,7 @@
   position: absolute;
   top: 24px;
   left: 4%;
-  font-size: 2.6rem;
+  font-size: 2.2rem;
 }
 
 .profiles__inner {
@@ -114,8 +114,8 @@
   height: 110px;
   border-radius: 50%;
   border: 4px solid transparent;
-  border-top-color: var(--netflix-red);
-  border-right-color: var(--netflix-red);
+  border-top-color: var(--brand);
+  border-right-color: var(--brand);
   animation: spin 0.9s linear infinite;
 }
 

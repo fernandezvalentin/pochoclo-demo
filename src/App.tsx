@@ -18,7 +18,7 @@ interface RowConfig {
 
 const ROWS: Record<View, RowConfig[]> = {
   home: [
-    { title: 'Originales de Netflix', fetchUrl: requests.fetchNetflixOriginals, isLargeRow: true },
+    { title: 'Series originales', fetchUrl: requests.fetchOriginals, isLargeRow: true },
     { title: 'Tendencias', fetchUrl: requests.fetchTrending },
     { title: 'Los más valorados', fetchUrl: requests.fetchTopRatedMovies },
     { title: 'Acción', fetchUrl: requests.fetchActionMovies },
@@ -28,7 +28,7 @@ const ROWS: Record<View, RowConfig[]> = {
     { title: 'Documentales', fetchUrl: requests.fetchDocumentaries },
   ],
   series: [
-    { title: 'Originales de Netflix', fetchUrl: requests.fetchNetflixOriginals, isLargeRow: true },
+    { title: 'Series originales', fetchUrl: requests.fetchOriginals, isLargeRow: true },
     { title: 'Series populares', fetchUrl: requests.fetchSeriesTrending },
     { title: 'Series mejor valoradas', fetchUrl: requests.fetchTopRatedSeries },
   ],
@@ -62,7 +62,7 @@ const KIDS_ROWS: Record<View, RowConfig[]> = {
 
 const HERO_URL: Record<View, string> = {
   home: requests.fetchTrending,
-  series: requests.fetchNetflixOriginals,
+  series: requests.fetchOriginals,
   movies: requests.fetchMoviesTrending,
 };
 

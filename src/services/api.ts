@@ -10,7 +10,7 @@ const api = axios.create({
 
 export const requests = {
   fetchTrending: '/trending/all/week',
-  fetchNetflixOriginals: '/discover/tv?with_networks=213',
+  fetchOriginals: '/discover/tv?with_networks=213',
   fetchTopRatedMovies: '/movie/top_rated',
   fetchTopRatedSeries: '/tv/top_rated',
   fetchActionMovies: '/discover/movie?with_genres=28',

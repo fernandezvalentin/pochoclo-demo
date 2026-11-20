@@ -1,16 +1,16 @@
-# 🎬 Netflix Clone - Premium React Experience
+# 🍿 Pochoclo - Streaming UI Demo
 
-A high-performance Netflix clone built with **React**, **TypeScript**, and **Vite**. This project features a fluid UI, real-time data from the **TMDB API**, and a premium design aesthetic following Netflix's signature look.
+**Pochoclo** is a Netflix-style streaming interface built with **React**, **TypeScript**, and **Vite**. It features a fluid UI, real-time data from the **TMDB API**, and its own brand on top of a classic streaming-platform layout.
 
 **🔗 Live demo:** _agregá acá el link de Vercel_
 
-> Proyecto de portfolio con fines educativos. No está afiliado a Netflix. Datos e imágenes de [TMDB](https://www.themoviedb.org/).
+> Proyecto de portfolio con fines educativos. No es un servicio real ni está afiliado a ninguna plataforma de streaming. Datos e imágenes de [TMDB](https://www.themoviedb.org/).
 
 ## 🚀 Key Features
 
 - **Profile Selector**: "¿Quién está viendo ahora?" screen with custom SVG avatars, a loading transition and the selected profile remembered in `localStorage`.
 - **Kids Profile**: Switches the catalog to animation, family and kids content only.
-- **Profile Menu**: Navbar dropdown to switch profiles or sign out back to the selector.
+- **Profile Menu**: Navbar dropdown to switch profiles or go back to the selector.
 - **Loading Skeletons**: Shimmer placeholders while each row loads; empty rows are hidden.
 - **Dynamic Hero Section**: Showcases a random trending movie or series with an immersive background and descriptions.
 - **Smart Navigation**: Categorized views for **Home**, **Series**, and **Movies** that dynamically filter content.
