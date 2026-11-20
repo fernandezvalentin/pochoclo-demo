@@ -121,7 +121,53 @@
   right: 0;
 }
 
+/* Top 10: número gigante con borde a la izquierda del póster */
+.row--top10 .row__card {
+  flex-basis: calc((100vw - 8% - 4 * 0.4vw) / 5.2);
+  aspect-ratio: 7 / 5;
+  background: transparent;
+  overflow: visible;
+  display: flex;
+  justify-content: flex-end;
+  align-items: stretch;
+}
+
+.row--top10 .row__card:hover,
+.row--top10 .row__card:focus-visible {
+  box-shadow: none;
+}
+
+.row--top10 .row__poster {
+  width: 50%;
+  border-radius: 4px;
+  position: relative;
+  z-index: 1;
+  box-shadow: -6px 0 12px rgba(0, 0, 0, 0.5);
+}
+
+.row__rank {
+  position: absolute;
+  left: 0;
+  bottom: -0.12em;
+  font-size: calc((100vw - 8%) / 5.2 * 0.68);
+  font-weight: 900;
+  line-height: 1;
+  letter-spacing: -0.08em;
+  color: #141414;
+  -webkit-text-stroke: 3px #595959;
+  font-family: 'Roboto', Arial, sans-serif;
+  user-select: none;
+}
+
 @media (max-width: 768px) {
+  .row.row--top10 .row__card {
+    flex-basis: 52vw;
+  }
+  .row__rank {
+    font-size: 36vw;
+    -webkit-text-stroke-width: 2px;
+  }
+
   .row__card {
     flex-basis: 42vw;
   }

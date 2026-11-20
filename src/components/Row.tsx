@@ -8,12 +8,14 @@ interface RowProps {
   title: string;
   fetchUrl: string;
   isLargeRow?: boolean;
+  isTop10?: boolean;
   onMovieClick: (movie: Movie) => void;
 }
 
 const SKELETON_COUNT = 8;
 
-const Row: React.FC<RowProps> = ({ title, fetchUrl, isLargeRow, onMovieClick }) => {
+const Row: React.FC<RowProps> = ({ title, fetchUrl, isLargeRow: large, isTop10, onMovieClick }) => {
+  const isLargeRow = large || isTop10;
   const [movies, setMovies] = useState<Movie[] | null>(null);
   const rowRef = useRef<HTMLDivElement>(null);
 
@@ -23,14 +25,15 @@ const Row: React.FC<RowProps> = ({ title, fetchUrl, isLargeRow, onMovieClick }) 
       .then(({ data }) => {
         if (cancelled) return;
         const results: Movie[] = data.results ?? [];
-        setMovies(results.filter((m) => (isLargeRow ? m.poster_path : m.backdrop_path)));
+        const usable = results.filter((m) => (isLargeRow ? m.poster_path : m.backdrop_path));
+        setMovies(isTop10 ? usable.slice(0, 10) : usable);
       })
       .catch((error) => {
         console.error(`Error al cargar la fila "${title}":`, error);
         if (!cancelled) setMovies([]);
       });
     return () => { cancelled = true; };
-  }, [fetchUrl, title, isLargeRow]);
+  }, [fetchUrl, title, isLargeRow, isTop10]);
 
   const scroll = (direction: 'left' | 'right') => {
     const el = rowRef.current;
@@ -43,7 +46,7 @@ const Row: React.FC<RowProps> = ({ title, fetchUrl, isLargeRow, onMovieClick }) 
   if (movies && movies.length === 0) return null;
 
   return (
-    <section className={`row ${isLargeRow ? 'row--large' : ''}`}>
+    <section className={`row ${isLargeRow ? 'row--large' : ''} ${isTop10 ? 'row--top10' : ''}`}>
       <h2 className="row__title">{title}</h2>
       <div className="row__container">
         <button className="row__arrow row__arrow--left" onClick={() => scroll('left')} aria-label="Anterior">
@@ -52,7 +55,7 @@ const Row: React.FC<RowProps> = ({ title, fetchUrl, isLargeRow, onMovieClick }) 
 
         <div className="row__posters" ref={rowRef}>
           {movies
-            ? movies.map((movie) => {
+            ? movies.map((movie, index) => {
                 const name = movie.title || movie.name || movie.original_name || '';
                 return (
                   <button
@@ -61,6 +64,7 @@ const Row: React.FC<RowProps> = ({ title, fetchUrl, isLargeRow, onMovieClick }) 
                     onClick={() => onMovieClick(movie)}
                     title={name}
                   >
+                    {isTop10 && <span className="row__rank" aria-hidden="true">{index + 1}</span>}
                     <img
                       className="row__poster"
                       src={imageUrl(isLargeRow ? movie.poster_path : movie.backdrop_path, isLargeRow ? 'w500' : 'w780')}

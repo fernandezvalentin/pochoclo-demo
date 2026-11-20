@@ -1,0 +1,133 @@
+.notif {
+  position: relative;
+  display: flex;
+}
+
+.notif__bell {
+  position: relative;
+  background: none;
+  color: #fff;
+  padding: 4px;
+  display: flex;
+}
+
+.notif__bell:hover {
+  opacity: 1;
+}
+
+.notif__badge {
+  position: absolute;
+  top: -2px;
+  right: -4px;
+  min-width: 17px;
+  height: 17px;
+  padding: 0 4px;
+  border-radius: 9px;
+  background: #e5484d;
+  color: #fff;
+  font-size: 0.68rem;
+  font-weight: 700;
+  line-height: 17px;
+  text-align: center;
+}
+
+.notif__panel {
+  position: absolute;
+  top: calc(100% + 18px);
+  right: -8px;
+  width: 380px;
+  max-height: 70vh;
+  overflow-y: auto;
+  background: rgba(0, 0, 0, 0.95);
+  border-top: 2px solid #e5e5e5;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
+  animation: notif-in 0.15s ease;
+}
+
+@keyframes notif-in {
+  from { opacity: 0; transform: translateY(-4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.notif__panel ul {
+  list-style: none;
+}
+
+.notif__panel li + li {
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.notif__item {
+  display: flex;
+  gap: 14px;
+  width: 100%;
+  padding: 14px 16px;
+  background: none;
+  color: #fff;
+  text-align: left;
+  font-weight: 400;
+  border-radius: 0;
+  position: relative;
+}
+
+.notif__item:hover {
+  opacity: 1;
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.notif__item--unread::before {
+  content: '';
+  position: absolute;
+  left: 5px;
+  top: 50%;
+  width: 6px;
+  height: 6px;
+  margin-top: -3px;
+  border-radius: 50%;
+  background: var(--brand);
+}
+
+.notif__item img {
+  width: 112px;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  border-radius: 3px;
+  flex-shrink: 0;
+}
+
+.notif__text {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  font-size: 0.85rem;
+  min-width: 0;
+}
+
+.notif__label {
+  color: #bcbcbc;
+}
+
+.notif__title {
+  font-weight: 700;
+}
+
+.notif__when {
+  color: #8c8c8c;
+  font-size: 0.75rem;
+}
+
+.notif__empty {
+  padding: 24px 16px;
+  color: #bcbcbc;
+  font-size: 0.9rem;
+}
+
+@media (max-width: 600px) {
+  .notif__panel {
+    position: fixed;
+    top: var(--header-height);
+    left: 8px;
+    right: 8px;
+    width: auto;
+  }
+}

@@ -24,6 +24,12 @@ export const requests = {
   fetchFamilyMovies: '/discover/movie?with_genres=10751',
   fetchKidsSeries: '/discover/tv?with_genres=10762',
   fetchAnimatedSeries: '/discover/tv?with_genres=16',
+  // Novedades populares
+  fetchTop10Today: '/trending/all/day',
+  fetchNowPlaying: '/movie/now_playing',
+  fetchUpcoming: '/movie/upcoming',
+  fetchOnTheAir: '/tv/on_the_air',
+  fetchNewKids: '/discover/movie?with_genres=16&sort_by=primary_release_date.desc&vote_count.gte=20',
 };
 
 // La variable de entorno apunta a .../t/p/original; nos quedamos con .../t/p
@@ -36,6 +42,14 @@ export type ImageSize = 'w300' | 'w500' | 'w780' | 'w1280' | 'original';
 
 export const imageUrl = (path: string | null | undefined, size: ImageSize = 'original') =>
   path ? `${IMAGE_ROOT}/${size}${path}` : '';
+
+export const searchTitles = async (query: string, signal?: AbortSignal) => {
+  const { data } = await api.get('/search/multi', {
+    params: { query, include_adult: false },
+    signal,
+  });
+  return data.results ?? [];
+};
 
 export const getMovieDetails = async (id: number, mediaType: string = 'movie') => {
   const { data } = await api.get(`/${mediaType}/${id}`);

@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import type { Movie } from '../types/movie';
-import { X, Play, Plus, ThumbsUp } from 'lucide-react';
+import { X, Play, Plus, Check, ThumbsUp } from 'lucide-react';
 import { imageUrl } from '../services/api';
 import { genreNames } from '../data/genres';
 import './MovieModal.css';
@@ -8,9 +8,11 @@ import './MovieModal.css';
 interface MovieModalProps {
   movie: Movie | null;
   onClose: () => void;
+  inList: boolean;
+  onToggleList: (movie: Movie) => void;
 }
 
-const MovieModal: React.FC<MovieModalProps> = ({ movie, onClose }) => {
+const MovieModal: React.FC<MovieModalProps> = ({ movie, onClose, inList, onToggleList }) => {
   useEffect(() => {
     if (!movie) return;
     const onKey = (e: KeyboardEvent) => e.key === 'Escape' && onClose();
@@ -55,7 +57,14 @@ const MovieModal: React.FC<MovieModalProps> = ({ movie, onClose }) => {
               <button className="modal__btn modal__btn--play">
                 <Play fill="black" size={20} /> Reproducir
               </button>
-              <button className="modal__btn--round" aria-label="Agregar a Mi lista"><Plus size={20} /></button>
+              <button
+                className={`modal__btn--round ${inList ? 'modal__btn--active' : ''}`}
+                onClick={() => onToggleList(movie)}
+                aria-label={inList ? 'Quitar de Mi lista' : 'Agregar a Mi lista'}
+                title={inList ? 'Quitar de Mi lista' : 'Agregar a Mi lista'}
+              >
+                {inList ? <Check size={20} /> : <Plus size={20} />}
+              </button>
               <button className="modal__btn--round" aria-label="Me gusta"><ThumbsUp size={18} /></button>
             </div>
           </div>

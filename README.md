@@ -11,6 +11,11 @@
 - **Profile Selector**: "¿Quién está viendo ahora?" screen with custom SVG avatars, a loading transition and the selected profile remembered in `localStorage`.
 - **Kids Profile**: Switches the catalog to animation, family and kids content only.
 - **Profile Menu**: Navbar dropdown to switch profiles or go back to the selector.
+- **Search**: Expandable search box in the navbar with debounced TMDB multi-search, empty and error states (kids profile only gets kids titles).
+- **My List**: Add or remove titles from the detail modal; saved per profile in `localStorage`.
+- **New & Popular**: Top 10 of the day with large rank numbers, new releases, upcoming premieres and series on the air.
+- **Notifications**: Bell with an unread counter showing new arrivals and upcoming premieres; opening a notification shows the title.
+- **Mobile Navigation**: "Explorar" dropdown replaces the nav links on small screens.
 - **Loading Skeletons**: Shimmer placeholders while each row loads; empty rows are hidden.
 - **Dynamic Hero Section**: Showcases a random trending movie or series with an immersive background and descriptions.
 - **Smart Navigation**: Categorized views for **Home**, **Series**, and **Movies** that dynamically filter content.
@@ -60,7 +65,8 @@ npm run dev
 
 ## 📂 Project Structure
 
-- `src/components/`: UI components (ProfileSelect, Navbar, Hero, Row, MovieModal, Footer, Avatar, Logo).
+- `src/components/`: UI components (ProfileSelect, Navbar, SearchBox, Notifications, Hero, Row, TitleGrid, SearchResults, MyList, MovieModal, Footer, Avatar, Logo).
+- `src/hooks/`: `useMyList` (per-profile list) and `useDebounce`.
 - `src/services/api.ts`: Axios instance, TMDB endpoints and the `imageUrl()` helper (responsive image sizes).
 - `src/data/`: Profiles and TMDB genre names.
 - `src/types/`: TypeScript definitions for movies.

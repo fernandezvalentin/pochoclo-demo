@@ -112,6 +112,16 @@
   justify-content: center;
 }
 
+.modal__btn--round:hover {
+  opacity: 1;
+  border-color: #fff;
+}
+
+.modal__btn--active {
+  border-color: #fff;
+  background-color: rgba(255, 255, 255, 0.15);
+}
+
 .modal__details {
   padding: 40px;
   display: grid;

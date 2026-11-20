@@ -1,32 +1,62 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Bell, ChevronDown, Search } from 'lucide-react';
+import { ChevronDown } from 'lucide-react';
 import Avatar from './Avatar';
 import Logo from './Logo';
+import SearchBox from './SearchBox';
+import Notifications from './Notifications';
 import { PROFILES, type Profile } from '../data/profiles';
+import type { Movie } from '../types/movie';
 import './Navbar.css';
 
-export type View = 'home' | 'series' | 'movies';
+export type View = 'home' | 'series' | 'movies' | 'new' | 'mylist';
 
 interface NavbarProps {
-  activeView: View;
+  activeView: View | null;
   onViewChange: (view: View) => void;
   profile: Profile;
   onProfileChange: (profile: Profile) => void;
   onSwitchProfile: () => void;
+  searchQuery: string;
+  onSearchChange: (query: string) => void;
+  onOpenTitle: (movie: Movie) => void;
 }
 
-const LINKS: { label: string; view?: View }[] = [
+const LINKS: { label: string; view: View }[] = [
   { label: 'Inicio', view: 'home' },
   { label: 'Series', view: 'series' },
   { label: 'Películas', view: 'movies' },
-  { label: 'Novedades populares' },
-  { label: 'Mi lista' },
+  { label: 'Novedades populares', view: 'new' },
+  { label: 'Mi lista', view: 'mylist' },
 ];
 
-const Navbar: React.FC<NavbarProps> = ({ activeView, onViewChange, profile, onProfileChange, onSwitchProfile }) => {
+// Cierra un desplegable al hacer clic afuera o con Escape.
+const useDismiss = (open: boolean, close: () => void) => {
+  const ref = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (!open) return;
+    const onClick = (e: MouseEvent) => {
+      if (!ref.current?.contains(e.target as Node)) close();
+    };
+    const onKey = (e: KeyboardEvent) => e.key === 'Escape' && close();
+    document.addEventListener('mousedown', onClick);
+    document.addEventListener('keydown', onKey);
+    return () => {
+      document.removeEventListener('mousedown', onClick);
+      document.removeEventListener('keydown', onKey);
+    };
+  }, [open, close]);
+  return ref;
+};
+
+const Navbar: React.FC<NavbarProps> = ({
+  activeView, onViewChange, profile, onProfileChange, onSwitchProfile,
+  searchQuery, onSearchChange, onOpenTitle,
+}) => {
   const [solid, setSolid] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
-  const menuRef = useRef<HTMLDivElement>(null);
+  const [browseOpen, setBrowseOpen] = useState(false);
+  const menuRef = useDismiss(menuOpen, () => setMenuOpen(false));
+  const browseRef = useDismiss(browseOpen, () => setBrowseOpen(false));
 
   useEffect(() => {
     const onScroll = () => setSolid(window.scrollY > 80);
@@ -35,36 +65,49 @@ const Navbar: React.FC<NavbarProps> = ({ activeView, onViewChange, profile, onPr
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
-  useEffect(() => {
-    if (!menuOpen) return;
-    const onClick = (e: MouseEvent) => {
-      if (!menuRef.current?.contains(e.target as Node)) setMenuOpen(false);
-    };
-    document.addEventListener('mousedown', onClick);
-    return () => document.removeEventListener('mousedown', onClick);
-  }, [menuOpen]);
-
   const otherProfiles = PROFILES.filter((p) => p.id !== profile.id);
+  const activeLabel = LINKS.find((l) => l.view === activeView)?.label ?? 'Explorar';
 
   return (
-    <nav className={`nav ${solid ? 'nav--solid' : ''}`}>
+    <nav className={`nav ${solid || searchQuery ? 'nav--solid' : ''}`}>
       <div className="nav__contents">
         <Logo onClick={() => onViewChange('home')} />
+
         <div className="nav__links">
           {LINKS.map(({ label, view }) => (
             <span
-              key={label}
-              className={`${view && activeView === view ? 'active' : ''} ${view ? '' : 'nav__link--disabled'}`}
-              onClick={() => view && onViewChange(view)}
+              key={view}
+              className={activeView === view ? 'active' : ''}
+              onClick={() => onViewChange(view)}
             >
               {label}
             </span>
           ))}
         </div>
+
+        <div className="nav__browse" ref={browseRef}>
+          <button className="nav__browse-btn" onClick={() => setBrowseOpen((o) => !o)} aria-expanded={browseOpen}>
+            {activeLabel} <ChevronDown size={14} />
+          </button>
+          {browseOpen && (
+            <div className="nav__browse-menu">
+              {LINKS.map(({ label, view }) => (
+                <button
+                  key={view}
+                  className={activeView === view ? 'active' : ''}
+                  onClick={() => { setBrowseOpen(false); onViewChange(view); }}
+                >
+                  {label}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+
         <div className="nav__right">
-          <Search size={22} className="nav__icon" />
-          <span className="nav__kids">Niños</span>
-          <Bell size={22} className="nav__icon" />
+          <SearchBox value={searchQuery} onChange={onSearchChange} />
+          {profile.kids && <span className="nav__kids">Niños</span>}
+          <Notifications profileId={profile.id} kids={profile.kids} onOpenTitle={onOpenTitle} />
           <div className="nav__profile" ref={menuRef}>
             <button
               className="nav__profile-btn"

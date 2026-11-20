@@ -1,0 +1,44 @@
+.page {
+  padding: calc(var(--header-height) + 40px) 4% 20px;
+  min-height: 70vh;
+}
+
+.page__title {
+  font-size: clamp(1.6rem, 2.5vw, 2.4rem);
+  font-weight: 500;
+  margin-bottom: 1.5rem;
+}
+
+.page__hint {
+  color: #808080;
+  margin-bottom: 1.2rem;
+}
+
+.page__empty {
+  max-width: 520px;
+  margin: 6vh auto 0;
+  color: #b3b3b3;
+  line-height: 1.6;
+}
+
+.page__empty p:first-child {
+  color: #fff;
+  font-size: 1.1rem;
+  margin-bottom: 0.8rem;
+}
+
+.page__empty ul {
+  padding-left: 1.2rem;
+}
+
+.page__plus {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  vertical-align: middle;
+  color: #fff;
+}
