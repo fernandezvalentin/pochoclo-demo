@@ -1,9 +1,10 @@
 import axios from 'axios';
 
+// Todas las llamadas pasan por nuestro proxy (/api/tmdb), que agrega la API key
+// del lado del servidor. Así la key no queda expuesta en el navegador.
 const api = axios.create({
-  baseURL: import.meta.env.VITE_TMDB_BASE_URL || 'https://api.themoviedb.org/3',
+  baseURL: '/api/tmdb',
   params: {
-    api_key: import.meta.env.VITE_TMDB_API_KEY,
     language: 'es-ES',
   },
 });

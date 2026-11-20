@@ -9,14 +9,29 @@ interface SearchBoxProps {
 
 const SearchBox: React.FC<SearchBoxProps> = ({ value, onChange }) => {
   const [open, setOpen] = useState(value !== '');
+  // El texto vive acá y no solo en la URL: la URL se actualiza en una transición
+  // y, si el input dependiera de ella, se perderían letras al escribir rápido.
+  const [text, setText] = useState(value);
+  const [prevValue, setPrevValue] = useState(value);
   const inputRef = useRef<HTMLInputElement>(null);
+
+  // Si la búsqueda se borra desde afuera (ej: al ir a otra sección), vaciamos el input.
+  if (value !== prevValue) {
+    setPrevValue(value);
+    if (value === '') setText('');
+  }
+
+  const handleChange = (next: string) => {
+    setText(next);
+    onChange(next);
+  };
 
   useEffect(() => {
     if (open) inputRef.current?.focus();
   }, [open]);
 
   const close = () => {
-    onChange('');
+    handleChange('');
     setOpen(false);
   };
 
@@ -36,13 +51,13 @@ const SearchBox: React.FC<SearchBoxProps> = ({ value, onChange }) => {
             className="search__input"
             type="search"
             placeholder="Títulos, géneros..."
-            value={value}
-            onChange={(e) => onChange(e.target.value)}
+            value={text}
+            onChange={(e) => handleChange(e.target.value)}
             onKeyDown={(e) => e.key === 'Escape' && close()}
-            onBlur={() => value === '' && setOpen(false)}
+            onBlur={() => text === '' && setOpen(false)}
             aria-label="Buscar títulos"
           />
-          {value && (
+          {text && (
             <button className="search__clear" onMouseDown={(e) => e.preventDefault()} onClick={close} aria-label="Borrar búsqueda">
               <X size={18} />
             </button>

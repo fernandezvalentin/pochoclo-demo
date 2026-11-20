@@ -4,11 +4,11 @@ import Avatar from './Avatar';
 import Logo from './Logo';
 import SearchBox from './SearchBox';
 import Notifications from './Notifications';
+import { Link } from 'react-router';
 import { PROFILES, type Profile } from '../data/profiles';
+import { VIEW_PATHS, type View } from '../routes';
 import type { Movie } from '../types/movie';
 import './Navbar.css';
-
-export type View = 'home' | 'series' | 'movies' | 'new' | 'mylist';
 
 interface NavbarProps {
   activeView: View | null;
@@ -75,13 +75,14 @@ const Navbar: React.FC<NavbarProps> = ({
 
         <div className="nav__links">
           {LINKS.map(({ label, view }) => (
-            <span
+            <Link
               key={view}
+              to={VIEW_PATHS[view]}
               className={activeView === view ? 'active' : ''}
-              onClick={() => onViewChange(view)}
+              aria-current={activeView === view ? 'page' : undefined}
             >
               {label}
-            </span>
+            </Link>
           ))}
         </div>
 
@@ -92,13 +93,14 @@ const Navbar: React.FC<NavbarProps> = ({
           {browseOpen && (
             <div className="nav__browse-menu">
               {LINKS.map(({ label, view }) => (
-                <button
+                <Link
                   key={view}
+                  to={VIEW_PATHS[view]}
                   className={activeView === view ? 'active' : ''}
-                  onClick={() => { setBrowseOpen(false); onViewChange(view); }}
+                  onClick={() => setBrowseOpen(false)}
                 >
                   {label}
-                </button>
+                </Link>
               ))}
             </div>
           )}

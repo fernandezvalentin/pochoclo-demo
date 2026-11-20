@@ -1,15 +1,20 @@
-import { useState, type ReactNode } from 'react';
-import Navbar, { type View } from './components/Navbar';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { Route, Routes, useLocation, useNavigate, useSearchParams } from 'react-router';
+import Navbar from './components/Navbar';
 import Hero from './components/Hero';
 import Row from './components/Row';
-import MovieModal from './components/MovieModal';
+import TitleModal from './components/TitleModal';
 import ProfileSelect from './components/ProfileSelect';
 import Footer from './components/Footer';
 import SearchResults from './components/SearchResults';
 import MyList from './components/MyList';
+import NotFound from './components/NotFound';
 import { useMyList } from './hooks/useMyList';
 import { requests } from './services/api';
 import { loadProfile, saveProfile, type Profile } from './data/profiles';
+import {
+  SEARCH_PATH, TITLE_PARAM, VIEW_PATHS, parseTitleParam, titleParamFor, viewFromPath, type View,
+} from './routes';
 import type { Movie } from './types/movie';
 import './App.css';
 
@@ -95,10 +100,12 @@ const KIDS_HERO_URL: Record<RowView, string> = {
 
 function App() {
   const [profile, setProfile] = useState<Profile | null>(loadProfile);
+  const navigate = useNavigate();
 
   const changeProfile = (next: Profile | null) => {
     saveProfile(next);
     setProfile(next);
+    navigate('/');
     window.scrollTo({ top: 0 });
   };
 
@@ -106,7 +113,7 @@ function App() {
     return <ProfileSelect onSelect={changeProfile} />;
   }
 
-  // key={profile.id}: al cambiar de perfil se reinicia todo el estado (vista, búsqueda, Mi lista).
+  // key={profile.id}: al cambiar de perfil se reinicia todo el estado (búsqueda, Mi lista, notificaciones).
   return (
     <Browse
       key={profile.id}
@@ -117,80 +124,130 @@ function App() {
   );
 }
 
+interface CatalogProps {
+  view: RowView;
+  kids?: boolean;
+  onMovieClick: (movie: Movie) => void;
+}
+
+// Hero + filas de una sección (Inicio, Series, Películas, Novedades).
+function Catalog({ view, kids, onMovieClick }: CatalogProps) {
+  const rows = (kids ? KIDS_ROWS : ROWS)[view];
+  const heroUrl = (kids ? KIDS_HERO_URL : HERO_URL)[view];
+  return (
+    <>
+      <Hero fetchUrl={heroUrl} onMoreInfo={onMovieClick} key={view} />
+      <main className="app__rows">
+        {rows.map((row) => (
+          <Row
+            key={`${view}-${row.title}`}
+            title={row.title}
+            fetchUrl={row.fetchUrl}
+            isLargeRow={row.isLargeRow}
+            isTop10={row.isTop10}
+            onMovieClick={onMovieClick}
+          />
+        ))}
+      </main>
+    </>
+  );
+}
+
 interface BrowseProps {
   profile: Profile;
   onProfileChange: (profile: Profile) => void;
   onSwitchProfile: () => void;
 }
 
-function Browse({ profile, onProfileChange, onSwitchProfile }: BrowseProps) {
-  const [selectedMovie, setSelectedMovie] = useState<Movie | null>(null);
-  const [view, setView] = useState<View>('home');
-  const [searchQuery, setSearchQuery] = useState('');
-  const myList = useMyList(profile.id);
+interface LocationState {
+  movie?: Movie;
+  fromApp?: boolean;
+}
 
-  const handleViewChange = (newView: View) => {
-    setSearchQuery('');
-    setView(newView);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
+function Browse({ profile, onProfileChange, onSwitchProfile }: BrowseProps) {
+  const location = useLocation();
+  const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const myList = useMyList(profile.id);
+  const state = (location.state ?? {}) as LocationState;
+
+  // Página a la que volver al cerrar la búsqueda.
+  const returnTo = useRef('/');
+  const onSearchPage = location.pathname === SEARCH_PATH;
+  const searchQuery = onSearchPage ? searchParams.get('q') ?? '' : '';
+
+  // Al cambiar de sección, volver arriba (abrir un título no cambia el pathname).
+  useEffect(() => {
+    window.scrollTo({ top: 0 });
+  }, [location.pathname]);
 
   const handleSearchChange = (query: string) => {
-    setSearchQuery(query);
-    window.scrollTo({ top: 0 });
+    if (query.trim() === '') {
+      navigate(returnTo.current);
+    } else if (onSearchPage) {
+      setSearchParams({ q: query }, { replace: true });
+    } else {
+      returnTo.current = location.pathname;
+      navigate(`${SEARCH_PATH}?q=${encodeURIComponent(query)}`);
+    }
   };
 
-  const searching = searchQuery.trim() !== '';
+  // El título abierto vive en la URL (?titulo=movie-603): se puede compartir y "atrás" lo cierra.
+  const openTitle = (movie: Movie) => {
+    const params = new URLSearchParams(searchParams);
+    params.set(TITLE_PARAM, titleParamFor(movie));
+    navigate({ search: params.toString() }, { state: { movie, fromApp: true } satisfies LocationState });
+  };
 
-  let content: ReactNode;
-  if (searching) {
-    content = <SearchResults query={searchQuery} kids={profile.kids} onMovieClick={setSelectedMovie} />;
-  } else if (view === 'mylist') {
-    content = <MyList movies={myList.list} onMovieClick={setSelectedMovie} />;
-  } else {
-    const rows = (profile.kids ? KIDS_ROWS : ROWS)[view];
-    const heroUrl = (profile.kids ? KIDS_HERO_URL : HERO_URL)[view];
-    content = (
-      <>
-        <Hero fetchUrl={heroUrl} onMoreInfo={setSelectedMovie} key={view} />
-        <main className="app__rows">
-          {rows.map((row) => (
-            <Row
-              key={`${view}-${row.title}`}
-              title={row.title}
-              fetchUrl={row.fetchUrl}
-              isLargeRow={row.isLargeRow}
-              isTop10={row.isTop10}
-              onMovieClick={setSelectedMovie}
-            />
-          ))}
-        </main>
-      </>
-    );
-  }
+  const closeTitle = useCallback(() => {
+    if (state.fromApp) {
+      navigate(-1);
+    } else {
+      const params = new URLSearchParams(searchParams);
+      params.delete(TITLE_PARAM);
+      navigate({ search: params.toString() }, { replace: true });
+    }
+  }, [state.fromApp, searchParams, navigate]);
+
+  const openedTitle = parseTitleParam(searchParams.get(TITLE_PARAM));
+  const catalog = (view: RowView) => <Catalog view={view} kids={profile.kids} onMovieClick={openTitle} />;
 
   return (
     <div className="app">
       <Navbar
-        activeView={searching ? null : view}
-        onViewChange={handleViewChange}
+        activeView={viewFromPath(location.pathname)}
+        onViewChange={(view: View) => navigate(VIEW_PATHS[view])}
         profile={profile}
         onProfileChange={onProfileChange}
         onSwitchProfile={onSwitchProfile}
         searchQuery={searchQuery}
         onSearchChange={handleSearchChange}
-        onOpenTitle={setSelectedMovie}
+        onOpenTitle={openTitle}
       />
 
-      {content}
+      <Routes>
+        <Route path={VIEW_PATHS.home} element={catalog('home')} />
+        <Route path={VIEW_PATHS.series} element={catalog('series')} />
+        <Route path={VIEW_PATHS.movies} element={catalog('movies')} />
+        <Route path={VIEW_PATHS.new} element={catalog('new')} />
+        <Route path={VIEW_PATHS.mylist} element={<MyList movies={myList.list} onMovieClick={openTitle} />} />
+        <Route
+          path={SEARCH_PATH}
+          element={<SearchResults query={searchQuery} kids={profile.kids} onMovieClick={openTitle} />}
+        />
+        <Route path="*" element={<NotFound />} />
+      </Routes>
 
       <Footer />
 
-      {selectedMovie && (
-        <MovieModal
-          movie={selectedMovie}
-          onClose={() => setSelectedMovie(null)}
-          inList={myList.isInList(selectedMovie.id)}
+      {openedTitle && (
+        <TitleModal
+          key={`${openedTitle.type}-${openedTitle.id}`}
+          type={openedTitle.type}
+          id={openedTitle.id}
+          initialMovie={state.movie}
+          onClose={closeTitle}
+          inList={myList.isInList}
           onToggleList={myList.toggle}
         />
       )}
