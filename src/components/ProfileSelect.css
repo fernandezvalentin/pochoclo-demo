@@ -1,0 +1,128 @@
+.profiles {
+  min-height: 100vh;
+  background: #141414;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 100px 16px 40px;
+  animation: profiles-in 0.5s ease;
+}
+
+@keyframes profiles-in {
+  from { opacity: 0; transform: scale(1.05); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.profiles__logo {
+  position: absolute;
+  top: 24px;
+  left: 4%;
+  font-size: 2.6rem;
+}
+
+.profiles__inner {
+  text-align: center;
+}
+
+.profiles__title {
+  font-size: clamp(1.8rem, 5vw, 3.5vw);
+  font-weight: 500;
+  margin-bottom: 2rem;
+}
+
+.profiles__list {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 2vw;
+}
+
+.profiles__item {
+  background: none;
+  color: grey;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.8rem;
+  font-weight: 400;
+  width: clamp(84px, 10vw, 200px);
+}
+
+.profiles__item:hover {
+  opacity: 1;
+}
+
+.profiles__avatar,
+.profiles__add {
+  width: 100% !important;
+  height: auto !important;
+  aspect-ratio: 1;
+  border: 0.3em solid transparent;
+  border-radius: 6px;
+  box-sizing: border-box;
+  transition: border-color 0.15s;
+}
+
+.profiles__add {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: grey;
+}
+
+.profiles__item:not(:disabled):hover .profiles__avatar,
+.profiles__item:focus-visible .profiles__avatar {
+  border-color: #e5e5e5;
+}
+
+.profiles__item:not(:disabled):hover .profiles__name,
+.profiles__item:focus-visible .profiles__name {
+  color: #e5e5e5;
+}
+
+.profiles__item--add:disabled {
+  cursor: default;
+  opacity: 0.8;
+}
+
+.profiles__name {
+  font-size: clamp(0.9rem, 1.3vw, 1.3rem);
+  transition: color 0.15s;
+}
+
+.profiles__manage {
+  margin-top: 3.5rem;
+  background: transparent;
+  border: 1px solid grey;
+  color: grey;
+  padding: 0.5em 1.5em;
+  font-size: clamp(0.9rem, 1.2vw, 1.2rem);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  font-weight: 400;
+  border-radius: 0;
+  cursor: default;
+}
+
+.profiles--loading {
+  position: relative;
+}
+
+.profiles__spinner {
+  width: 110px;
+  height: 110px;
+  border-radius: 50%;
+  border: 4px solid transparent;
+  border-top-color: var(--netflix-red);
+  border-right-color: var(--netflix-red);
+  animation: spin 0.9s linear infinite;
+}
+
+.profiles__loading-avatar {
+  position: absolute;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}

@@ -1,6 +1,8 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import type { Movie } from '../types/movie';
 import { X, Play, Plus, ThumbsUp } from 'lucide-react';
+import { imageUrl } from '../services/api';
+import { genreNames } from '../data/genres';
 import './MovieModal.css';
 
 interface MovieModalProps {
@@ -9,32 +11,52 @@ interface MovieModalProps {
 }
 
 const MovieModal: React.FC<MovieModalProps> = ({ movie, onClose }) => {
+  useEffect(() => {
+    if (!movie) return;
+    const onKey = (e: KeyboardEvent) => e.key === 'Escape' && onClose();
+    const prevOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    window.addEventListener('keydown', onKey);
+    return () => {
+      document.body.style.overflow = prevOverflow;
+      window.removeEventListener('keydown', onKey);
+    };
+  }, [movie, onClose]);
+
   if (!movie) return null;
 
-  const imageBaseUrl = import.meta.env.VITE_TMDB_IMAGE_BASE_URL;
+  const title = movie.title || movie.name || movie.original_name;
+  const year = (movie.release_date || movie.first_air_date || '').split('-')[0];
+  const match = movie.vote_average ? Math.round(movie.vote_average * 10) : null;
+  const genres = genreNames(movie.genre_ids);
+  const isSeries = movie.media_type === 'tv' || (!movie.title && !!movie.name);
 
   return (
     <div className="modal__overlay" onClick={onClose}>
-      <div className="modal__content" onClick={(e) => e.stopPropagation()}>
-        <button className="modal__close" onClick={onClose}>
+      <div
+        className="modal__content"
+        onClick={(e) => e.stopPropagation()}
+        role="dialog"
+        aria-modal="true"
+        aria-label={title}
+      >
+        <button className="modal__close" onClick={onClose} aria-label="Cerrar">
           <X size={24} />
         </button>
-        
-        <div 
+
+        <div
           className="modal__banner"
-          style={{
-            backgroundImage: `url("${imageBaseUrl}${movie.backdrop_path || movie.poster_path}")`,
-          }}
+          style={{ backgroundImage: `url("${imageUrl(movie.backdrop_path || movie.poster_path, 'w1280')}")` }}
         >
           <div className="modal__banner--fadeBottom" />
           <div className="modal__banner--contents">
-            <h1>{movie.title || movie.name}</h1>
+            <h1>{title}</h1>
             <div className="modal__actions">
               <button className="modal__btn modal__btn--play">
                 <Play fill="black" size={20} /> Reproducir
               </button>
-              <button className="modal__btn--round"><Plus size={20} /></button>
-              <button className="modal__btn--round"><ThumbsUp size={20} /></button>
+              <button className="modal__btn--round" aria-label="Agregar a Mi lista"><Plus size={20} /></button>
+              <button className="modal__btn--round" aria-label="Me gusta"><ThumbsUp size={18} /></button>
             </div>
           </div>
         </div>
@@ -42,15 +64,19 @@ const MovieModal: React.FC<MovieModalProps> = ({ movie, onClose }) => {
         <div className="modal__details">
           <div className="modal__details--left">
             <p className="modal__info">
-              <span className="modal__match">98% de coincidencia</span> 
-              <span>{movie.release_date?.split('-')[0] || movie.first_air_date?.split('-')[0]}</span>
+              {match !== null && <span className="modal__match">{match}% para ti</span>}
+              {year && <span>{year}</span>}
               <span className="modal__hd">HD</span>
+              <span className="modal__type">{isSeries ? 'Serie' : 'Película'}</span>
             </p>
-            <p className="modal__overview">{movie.overview}</p>
+            <p className="modal__overview">{movie.overview || 'Sin descripción disponible.'}</p>
           </div>
           <div className="modal__details--right">
-            <p><span>Géneros:</span> {movie.genre_ids.join(', ')} (Placeholder)</p>
-            <p><span>Este título es:</span> Emocionante, Épico</p>
+            {genres.length > 0 && <p><span>Géneros:</span> {genres.join(', ')}</p>}
+            {movie.vote_average > 0 && (
+              <p><span>Puntuación TMDB:</span> {movie.vote_average.toFixed(1)} / 10</p>
+            )}
+            <p><span>Idioma del audio:</span> Español, Inglés</p>
           </div>
         </div>
       </div>

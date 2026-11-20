@@ -1,0 +1,33 @@
+.footer {
+  max-width: 980px;
+  margin: 60px auto 0;
+  padding: 20px 4% 40px;
+  color: #808080;
+  font-size: 0.8rem;
+}
+
+.footer__links {
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+  margin-bottom: 28px;
+}
+
+.footer__links span {
+  cursor: pointer;
+}
+
+.footer__links span:hover {
+  text-decoration: underline;
+}
+
+.footer__disclaimer a {
+  text-decoration: underline;
+}
+
+@media (max-width: 768px) {
+  .footer__links {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}

@@ -2,20 +2,26 @@
 
 A high-performance Netflix clone built with **React**, **TypeScript**, and **Vite**. This project features a fluid UI, real-time data from the **TMDB API**, and a premium design aesthetic following Netflix's signature look.
 
-![Netflix Clone Preview](https://links.papareact.com/b6y) <!-- Placeholder for a real screenshot if available -->
+**🔗 Live demo:** _agregá acá el link de Vercel_
+
+> Proyecto de portfolio con fines educativos. No está afiliado a Netflix. Datos e imágenes de [TMDB](https://www.themoviedb.org/).
 
 ## 🚀 Key Features
 
+- **Profile Selector**: "¿Quién está viendo ahora?" screen with custom SVG avatars, a loading transition and the selected profile remembered in `localStorage`.
+- **Kids Profile**: Switches the catalog to animation, family and kids content only.
+- **Profile Menu**: Navbar dropdown to switch profiles or sign out back to the selector.
+- **Loading Skeletons**: Shimmer placeholders while each row loads; empty rows are hidden.
 - **Dynamic Hero Section**: Showcases a random trending movie or series with an immersive background and descriptions.
 - **Smart Navigation**: Categorized views for **Home**, **Series**, and **Movies** that dynamically filter content.
 - **Content Carousels**: Multiple horizontal rows for genres like Trending, Top Rated, Action, Horror, and many more.
-- **Interactive Modals**: Detailed movie overlays with descriptions, release dates, and high-quality backdrops.
+- **Interactive Modals**: Detailed overlays with genres, TMDB score, release year and backdrops. Close with `Esc` or by clicking outside.
 - **Responsive Design**: Fully optimized for Desktop, Tablet, and Mobile viewing.
 - **Defensive API Layer**: Robust error handling and data validation to ensure a smooth user experience even with API fluctuations.
 
 ## 🛠️ Built With
 
-- **React 18** - UI Library
+- **React 19** - UI Library
 - **TypeScript** - For type-safe development
 - **Vite** - Lightning-fast build tool
 - **Axios** - For API requests
@@ -54,10 +60,10 @@ npm run dev
 
 ## 📂 Project Structure
 
-- `src/components/`: Reusable UI components (Navbar, Hero, Row, MovieModal).
-- `src/services/api.ts`: Centralized TMDB API logic and Axios instance.
-- `src/types/`: TypeScript definitions for movies and state.
-- `src/hooks/`: Custom hooks for data fetching and UI logic.
+- `src/components/`: UI components (ProfileSelect, Navbar, Hero, Row, MovieModal, Footer, Avatar, Logo).
+- `src/services/api.ts`: Axios instance, TMDB endpoints and the `imageUrl()` helper (responsive image sizes).
+- `src/data/`: Profiles and TMDB genre names.
+- `src/types/`: TypeScript definitions for movies.
 
 ## 🤝 Contributing
 

@@ -1,11 +1,11 @@
-@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Roboto:wght@300;400;500;700&display=swap');
 
 :root {
   --netflix-red: #e50914;
-  --netflix-black: #111111;
+  --netflix-black: #141414;
   --netflix-grey: #222222;
   --netflix-white: #ffffff;
-  --header-height: 70px;
+  --header-height: 68px;
   --transition-speed: 0.3s;
 }
 
@@ -25,20 +25,20 @@ body {
 }
 
 /* Custom Scrollbar */
-::-webkit_scrollbar {
+::-webkit-scrollbar {
   width: 8px;
 }
 
-::-webkit_scrollbar-track {
+::-webkit-scrollbar-track {
   background: var(--netflix-black);
 }
 
-::-webkit_scrollbar-thumb {
+::-webkit-scrollbar-thumb {
   background: var(--netflix-grey);
   border-radius: 10px;
 }
 
-::-webkit_scrollbar-thumb:hover {
+::-webkit-scrollbar-thumb:hover {
   background: #333333;
 }
 
@@ -47,7 +47,13 @@ button {
   border: none;
   border-radius: 4px;
   font-weight: bold;
+  font-family: inherit;
   transition: opacity var(--transition-speed);
+}
+
+button:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 2px;
 }
 
 button:hover {

@@ -1,9 +1,16 @@
 .app {
-  background-color: var(--netflix-black);
+  background-color: #141414;
+  min-height: 100vh;
 }
 
 .app__rows {
-  margin-top: -40px;
+  margin-top: -8vw;
   position: relative;
   z-index: 10;
+}
+
+@media (max-width: 768px) {
+  .app__rows {
+    margin-top: -40px;
+  }
 }

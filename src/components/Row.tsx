@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import api from '../services/api';
+import api, { imageUrl } from '../services/api';
 import type { Movie } from '../types/movie';
 import './Row.css';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
@@ -11,62 +11,76 @@ interface RowProps {
   onMovieClick: (movie: Movie) => void;
 }
 
+const SKELETON_COUNT = 8;
+
 const Row: React.FC<RowProps> = ({ title, fetchUrl, isLargeRow, onMovieClick }) => {
-  const [movies, setMovies] = useState<Movie[]>([]);
+  const [movies, setMovies] = useState<Movie[] | null>(null);
   const rowRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    async function fetchData() {
-      try {
-        const request = await api.get(fetchUrl);
-        if (request.data.results) {
-          setMovies(request.data.results);
-        }
-      } catch (error) {
-        console.error(`Error fetching row ${title}:`, error);
-      }
-    }
-    fetchData();
-  }, [fetchUrl, title]);
+    let cancelled = false;
+    api.get(fetchUrl)
+      .then(({ data }) => {
+        if (cancelled) return;
+        const results: Movie[] = data.results ?? [];
+        setMovies(results.filter((m) => (isLargeRow ? m.poster_path : m.backdrop_path)));
+      })
+      .catch((error) => {
+        console.error(`Error al cargar la fila "${title}":`, error);
+        if (!cancelled) setMovies([]);
+      });
+    return () => { cancelled = true; };
+  }, [fetchUrl, title, isLargeRow]);
 
   const scroll = (direction: 'left' | 'right') => {
-    if (rowRef.current) {
-      const { scrollLeft, clientWidth } = rowRef.current;
-      const scrollTo = direction === 'left' ? scrollLeft - clientWidth : scrollLeft + clientWidth;
-      rowRef.current.scrollTo({ left: scrollTo, behavior: 'smooth' });
-    }
+    const el = rowRef.current;
+    if (!el) return;
+    const delta = el.clientWidth * 0.9 * (direction === 'left' ? -1 : 1);
+    el.scrollBy({ left: delta, behavior: 'smooth' });
   };
 
-  const imageBaseUrl = import.meta.env.VITE_TMDB_IMAGE_BASE_URL;
+  // Si la API no devolvió nada, no mostramos una fila vacía.
+  if (movies && movies.length === 0) return null;
 
   return (
-    <div className="row">
-      <h2>{title}</h2>
+    <section className={`row ${isLargeRow ? 'row--large' : ''}`}>
+      <h2 className="row__title">{title}</h2>
       <div className="row__container">
-        <button className="row__arrow row__arrow--left" onClick={() => scroll('left')}>
-          <ChevronLeft />
+        <button className="row__arrow row__arrow--left" onClick={() => scroll('left')} aria-label="Anterior">
+          <ChevronLeft size={36} />
         </button>
-        
+
         <div className="row__posters" ref={rowRef}>
-          {movies.map((movie) => (
-            ((isLargeRow && movie.poster_path) || (!isLargeRow && movie.backdrop_path)) && (
-              <img
-                key={movie.id}
-                onClick={() => onMovieClick(movie)}
-                className={`row__poster ${isLargeRow && 'row__posterLarge'}`}
-                src={`${imageBaseUrl}${isLargeRow ? movie.poster_path : movie.backdrop_path}`}
-                alt={movie.name || movie.title}
-                loading="lazy"
-              />
-            )
-          ))}
+          {movies
+            ? movies.map((movie) => {
+                const name = movie.title || movie.name || movie.original_name || '';
+                return (
+                  <button
+                    key={movie.id}
+                    className="row__card"
+                    onClick={() => onMovieClick(movie)}
+                    title={name}
+                  >
+                    <img
+                      className="row__poster"
+                      src={imageUrl(isLargeRow ? movie.poster_path : movie.backdrop_path, isLargeRow ? 'w500' : 'w780')}
+                      alt={name}
+                      loading="lazy"
+                    />
+                    {!isLargeRow && <span className="row__card-title">{name}</span>}
+                  </button>
+                );
+              })
+            : Array.from({ length: SKELETON_COUNT }, (_, i) => (
+                <div key={i} className="row__card row__card--skeleton" />
+              ))}
         </div>
 
-        <button className="row__arrow row__arrow--right" onClick={() => scroll('right')}>
-          <ChevronRight />
+        <button className="row__arrow row__arrow--right" onClick={() => scroll('right')} aria-label="Siguiente">
+          <ChevronRight size={36} />
         </button>
       </div>
-    </div>
+    </section>
   );
 };
 

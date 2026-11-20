@@ -1,15 +1,12 @@
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: import.meta.env.VITE_TMDB_BASE_URL,
+  baseURL: import.meta.env.VITE_TMDB_BASE_URL || 'https://api.themoviedb.org/3',
   params: {
     api_key: import.meta.env.VITE_TMDB_API_KEY,
     language: 'es-ES',
   },
 });
-
-console.log("Configurando API con URL:", import.meta.env.VITE_TMDB_BASE_URL);
-console.log("API Key cargada:", import.meta.env.VITE_TMDB_API_KEY ? "SÍ" : "NO");
 
 export const requests = {
   fetchTrending: '/trending/all/week',
@@ -23,7 +20,22 @@ export const requests = {
   fetchDocumentaries: '/discover/movie?with_genres=99',
   fetchSeriesTrending: '/trending/tv/week',
   fetchMoviesTrending: '/trending/movie/week',
+  fetchKidsMovies: '/discover/movie?with_genres=16&certification_country=US&certification.lte=G',
+  fetchFamilyMovies: '/discover/movie?with_genres=10751',
+  fetchKidsSeries: '/discover/tv?with_genres=10762',
+  fetchAnimatedSeries: '/discover/tv?with_genres=16',
 };
+
+// La variable de entorno apunta a .../t/p/original; nos quedamos con .../t/p
+// para poder pedir tamaños más chicos (w300, w500) en las filas y cargar más rápido.
+const IMAGE_ROOT = (import.meta.env.VITE_TMDB_IMAGE_BASE_URL || 'https://image.tmdb.org/t/p/original')
+  .replace(/\/+$/, '')
+  .replace(/\/[^/]+$/, '');
+
+export type ImageSize = 'w300' | 'w500' | 'w780' | 'w1280' | 'original';
+
+export const imageUrl = (path: string | null | undefined, size: ImageSize = 'original') =>
+  path ? `${IMAGE_ROOT}/${size}${path}` : '';
 
 export const getMovieDetails = async (id: number, mediaType: string = 'movie') => {
   const { data } = await api.get(`/${mediaType}/${id}`);
